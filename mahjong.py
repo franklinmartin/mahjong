@@ -71,11 +71,12 @@ class Hand:
     
 
 class Player:
-    def __init__(self, name):
+    def __init__(self, name, is_ai=False):
         self.name = name
         self.hand = Hand()
         self.discards = []
         self.score = 25000  # Starting score for each player
+        self.is_ai = is_ai
 
     def draw(self, wall):
         tile = wall.draw_tile()
@@ -152,3 +153,11 @@ class RiichiMahjongGame:
             current_player = self.players[turn % len(self.players)]
             self.play_turn(current_player)
             turn += 1
+
+    #def player_turn(self, player, game_state: GameState):
+
+    def ai_turn(self, player, game_state: GameState):
+        if player.is_ai:
+            decision = self.ai_decision(game_state)
+    def ai_decision(self, game_state: GameState):
+        return random.choice(['draw', 'discard', 'declare riichi'])
