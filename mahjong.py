@@ -101,6 +101,22 @@ class Player:
     
     def __repr__(self):
         return f"Player({self.name}, Score: {self.score})"
+    
+class GameState:
+    def __init__(self, players, wall, dealer_index=0, round_wind='East'):
+        self.players = players
+        self.wall = wall
+        self.dealer_index = dealer_index
+        self.round_wind = round_wind
+        self.riichi_declared = False
+
+    def get_game_state(self):
+        return {
+            "players": self.players,
+            "dealer_index": self.dealer_index,
+            "round_wind": self.round_wind,
+            "wall_tiles_left": len(self.wall.tiles)
+        }
 
 class RiichiMahjongGame:
     def __init__(self, players):
