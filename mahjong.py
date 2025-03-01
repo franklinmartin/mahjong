@@ -63,6 +63,10 @@ class Hand:
     def remove_tile(self, tile):
         self.tiles.remove(tile)
 
+    def sort_hand(self):
+        self.tiles.sort()
+        return self.tiles
+
     def is_closed(self):
         return len(self.open_melds) == 0
     
