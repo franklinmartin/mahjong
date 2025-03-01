@@ -1,5 +1,6 @@
 import random
 from enum import Enum
+from typing import List
 
 # Define the tile suits and types.
 class Suit(Enum):
@@ -43,8 +44,9 @@ class Wall:
         return None
 
 class Hand:
-    def __init__(self):
+    def __init__(self, open_melds=None):
         self.tiles = []
+        self.open_melds = open_melds or []
 
     def add_tile(self, tile):
         self.tiles.append(tile)
@@ -52,8 +54,21 @@ class Hand:
     def remove_tile(self, tile):
         self.tiles.remove(tile)
 
+    def __lt__(self, other: 'Tile'):
+        suit_order = {Suit.MAN: 1, Suit.PIN: 2, Suit.SOU: 3, Suit.WIND: 4, Suit.DRAGON: 5}
+        if suit_order[self.suit] == suit_order[other.suit]:
+            return self.value < other.value
+        return suit_order[self.suit] < suit_order[other.suit]
+
+    def is_closed(self):
+        return len(self.open_melds) == 0
+    
+    def is_tenpai(self):
+        return False
+    
     def __repr__(self):
         return f"Hand({self.tiles})"
+    
 
 class Player:
     def __init__(self, name):
@@ -79,7 +94,11 @@ class Player:
         print(f"{self.name} declares Riichi!")
         # Deduct 1000 points from score and mark hand as riichi.
         self.score -= 1000
-
+        self.declared_riichi = True
+    
+    def declare_tsumo():
+        return True
+    
     def __repr__(self):
         return f"Player({self.name}, Score: {self.score})"
 
@@ -89,6 +108,8 @@ class RiichiMahjongGame:
         self.wall = Wall()
         self.dealer_index = 0  # Index for the dealer (East seat)
         self.round_wind = 'East'  # Can change as rounds progress
+
+        self.riichi_declared = False
 
     def initial_deal(self):
         # Each player receives 13 tiles; dealer gets 14.
