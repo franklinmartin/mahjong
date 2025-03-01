@@ -14,6 +14,13 @@ class Tile:
     def __init__(self, suit, value):
         self.suit = suit  # Suit or type of tile
         self.value = value  # Numeric value or name (for winds/dragons)
+
+    def __lt__(self, other: 'Tile'):
+        suit_order = {Suit.MAN: 1, Suit.PIN: 2, Suit.SOU: 3, Suit.WIND: 4, Suit.DRAGON: 5}
+        if suit_order[self.suit] == suit_order[other.suit]:
+            return self.value < other.value
+        return suit_order[self.suit] < suit_order[other.suit]
+    
     def __eq__(self, other):
         if isinstance(other, Tile):
             return self.suit == other.suit and self.value == other.value
@@ -55,12 +62,6 @@ class Hand:
 
     def remove_tile(self, tile):
         self.tiles.remove(tile)
-
-    def __lt__(self, other: 'Tile'):
-        suit_order = {Suit.MAN: 1, Suit.PIN: 2, Suit.SOU: 3, Suit.WIND: 4, Suit.DRAGON: 5}
-        if suit_order[self.suit] == suit_order[other.suit]:
-            return self.value < other.value
-        return suit_order[self.suit] < suit_order[other.suit]
 
     def is_closed(self):
         return len(self.open_melds) == 0
