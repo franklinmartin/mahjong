@@ -14,7 +14,9 @@ class Tile:
     def __init__(self, suit, value):
         self.suit = suit  # Suit or type of tile
         self.value = value  # Numeric value or name (for winds/dragons)
-
+    def __eq__(self, other):
+        if isinstance(other, Tile):
+            return self.suit == other.suit and self.value == other.value
     def __repr__(self):
         return f"{self.value} {self.suit.value}"
 

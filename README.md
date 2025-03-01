@@ -31,3 +31,8 @@ KAN (ANY) -> OPEN, CLOSED, KAN FROM PON
 Player --- Player ...
 Draw Tile, Discard Tile.
 Declare win.
+
+
+
+MELD: SEQUENCE AND SET
+PAIR
