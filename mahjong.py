@@ -107,24 +107,50 @@ class Player:
     def declare_tsumo():
         return True
     
+    #def get_action(self, game_state: GameState):
+
     def __repr__(self):
         return f"Player({self.name}, Score: {self.score})"
-    
+
+
+class GameStateSnapshot:
+    def __init__(self, dealer_index, round_wind, wall_tiles_left, players_info, last_discard):
+        self.dealer_index = dealer_index
+        self.round_wind = round_wind
+        self.wall_tiles_left = wall_tiles_left
+        self.players_info = players_info  # e.g., {player_name: {score: ..., hand_count: ...}}
+        self.last_discard = last_discard
+
+    def __repr__(self):
+        return (
+            f"GameStateSnapshot(dealer_index={self.dealer_index}, "
+            f"round_wind={self.round_wind}, wall_tiles_left={self.wall_tiles_left}, "
+            f"players_info={self.players_info}, last_discard={self.last_discard})"
+        )
+
+   
 class GameState:
-    def __init__(self, players, wall, dealer_index=0, round_wind='East'):
+    def __init__(self, players, wall, dealer_index=0, round_wind='East', last_discard=None):
         self.players = players
         self.wall = wall
         self.dealer_index = dealer_index
         self.round_wind = round_wind
+        self.last_discard = last_discard
         self.riichi_declared = False
 
-    def get_game_state(self):
-        return {
-            "players": self.players,
-            "dealer_index": self.dealer_index,
-            "round_wind": self.round_wind,
-            "wall_tiles_left": len(self.wall.tiles)
+    def get_snapshot(self):
+        # Build a lightweight snapshot containing only essential info.
+        players_info = {
+            player.name: {"score": player.score, "hand_count": len(player.hand.tiles)}
+            for player in self.players
         }
+        return GameStateSnapshot(
+            dealer_index=self.dealer_index,
+            round_wind=self.round_wind,
+            wall_tiles_left=len(self.wall.tiles),
+            players_info=players_info,
+            last_discard=self.last_discard,
+        )
 
 class RiichiMahjongGame:
     def __init__(self, players):
@@ -132,7 +158,8 @@ class RiichiMahjongGame:
         self.wall = Wall()
         self.dealer_index = 0  # Index for the dealer (East seat)
         self.round_wind = 'East'  # Can change as rounds progress
-
+        self.last_discard = None
+        self.game_state = GameState()
         self.riichi_declared = False
 
     def initial_deal(self):
@@ -145,6 +172,10 @@ class RiichiMahjongGame:
     def play_turn(self, player):
         drawn_tile = player.draw(self.wall)
         print(f"{player.name} draws {drawn_tile}")
+
+
+        for other_player in self.players:
+            if other_player != player and other_player.can_declare_ron(drawn_tile):
         # Here you would check for a winning condition (Tsumo) or Riichi declaration.
         # For demonstration, we simply discard the first tile in hand.
         if player.hand.tiles:
